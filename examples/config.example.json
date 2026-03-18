@@ -1,0 +1,39 @@
+# NASClaw 示例配置文件
+# 复制此文件到 config/openclaw.json 并修改
+
+{
+  "meta": {
+    "name": "NASClaw",
+    "version": "1.0.0",
+    "description": "在NAS上运行的AI猫"
+  },
+  "models": {
+    "mode": "replace",
+    "providers": {
+      "custom": {
+        "baseUrl": "https://api.moonshot.cn/v1",
+        "apiKey": "your-kimi-api-key-here",
+        "models": [
+          {
+            "id": "kimi-k2.5",
+            "name": "Kimi K2.5",
+            "contextWindow": 200000
+          }
+        ]
+      }
+    }
+  },
+  "channels": {
+    "feishu": {
+      "enabled": true,
+      "appId": "cli_your_app_id_here",
+      "appSecret": "your_app_secret_here",
+      "streaming": true
+    }
+  },
+  "heartbeat": {
+    "enabled": true,
+    "every": "30m",
+    "prompt": "检查飞书日历和任务，汇报今日进展"
+  }
+}

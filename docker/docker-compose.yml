@@ -1,0 +1,23 @@
+version: '3.8'
+
+services:
+  openclaw:
+    image: openclaw/openclaw:latest
+    container_name: nasclaw
+    restart: unless-stopped
+    ports:
+      - "18789:18789"
+    volumes:
+      - ./data:/home/node/.openclaw
+      - ./config:/app/config
+    environment:
+      - NODE_ENV=production
+      - OPENCLAW_HOME=/home/node/.openclaw
+    networks:
+      - nasclaw-network
+    # 如果使用宿主机网络（解决部分模型网络问题）
+    # network_mode: host
+
+networks:
+  nasclaw-network:
+    driver: bridge
