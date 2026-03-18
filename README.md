@@ -5,6 +5,15 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Docker](https://img.shields.io/badge/docker-%230db7ed.svg?style=for-the-badge&logo=docker&logoColor=white)](https://www.docker.com/)
 [![OpenClaw](https://img.shields.io/badge/OpenClaw-2026.3.8-blue)](https://openclaw.ai)
+[![Troubleshooting](https://img.shields.io/badge/踩坑记录-6887字-orange)](./docs/troubleshooting.md)
+
+---
+
+## 📢 重要提示
+
+**新手必读：** [📖 5分钟快速开始](./docs/quickstart.md)  
+**遇到问题：** [🔥 踩坑记录与实战经验](./docs/troubleshooting.md)（6887字真实踩坑记录）  
+**飞书打通：** [💬 飞书配置指南](./docs/feishu.md)
 
 ---
 
