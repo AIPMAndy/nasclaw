@@ -1,0 +1,8 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Quick Start
+    url: https://github.com/AIPMAndy/nasclaw/blob/main/docs/quickstart.md
+    about: 先看快速开始，能解决大部分入门问题
+  - name: Troubleshooting
+    url: https://github.com/AIPMAndy/nasclaw/blob/main/docs/troubleshooting.md
+    about: 遇到报错时先看踩坑文档

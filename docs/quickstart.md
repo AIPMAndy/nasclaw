@@ -1,184 +1,154 @@
 # NASClaw 快速开始
 
-> 5分钟在NAS上部署你的AI猫
+> 目标：用最短路径把 OpenClaw 跑在 NAS 上，并尽快进入可用状态。
 
 ---
 
-## 1. 一键安装脚本
+## 先选你的安装路径
 
-```bash
-# 下载安装脚本
-curl -fsSL https://raw.githubusercontent.com/AIPMAndy/nasclaw/main/scripts/install.sh | bash
+### 路径 A：极空间 / 应用商店用户
+如果你已经能在应用商店安装 OpenClaw，优先走这条路。
 
-# 或者使用wget
-wget -qO- https://raw.githubusercontent.com/AIPMAndy/nasclaw/main/scripts/install.sh | bash
-```
+### 路径 B：通用 Docker 用户
+如果你用的是群晖、威联通、自建 NAS，或者更习惯自己控配置，走 Docker Compose。
 
 ---
 
-## 2. 手动安装（极空间用户）
+## 路径 A：极空间 5 分钟安装
 
-### 2.1 应用商店安装
-
+### 1. 应用商店安装
 1. 打开极空间「应用商店」
 2. 搜索「OpenClaw」
 3. 点击安装
-4. 等待2-3分钟
+4. 等待 2-3 分钟
 
-### 2.2 初始化配置
-
+### 2. 初始化容器
 ```bash
-# 进入容器Shell
-docker exec -it appstore_openclaw /bin/bash
-
-# 切换到node用户
+# 进入容器 Shell 后执行
 su node
-
-# 启动初始化向导
 openclaw onboard
 ```
 
-### 2.3 选择配置
+### 3. 初始化时这样选
+- 选择 **快速开始**
+- `Config handling` 选择 **Update values**
+- 先选一个你能拿到 API Key 的模型
+- 飞书等集成都可以先 `skip for now`
 
-- ✅ 选择「快速开始」
-- ✅ Config handling 选择「Update values」
-- ✅ 选择国产模型（推荐通义千问免费试用）
-- ✅ 其他选项选择「skip for now」
+### 4. 保存 token
+初始化完成后你会看到 Control UI 地址和 token。
 
-### 2.4 记住Token
+**注意：**
+- 复制时去掉多余空格
+- 如果终端折行了，确认 token 没有被截断
 
-```
-Control UI: http://localhost:18789
-Token: your-token-here
-```
-
-**注意**：去除token中的空格和 `|` 字符
-
-### 2.5 访问Control UI
-
-1. 点击极空间应用图标
-2. 填入Token
-3. 开始配置模型和飞书
+### 5. 进入 Control UI
+在 NAS 中打开 OpenClaw 的页面，填入 token 登录。
 
 ---
 
-## 3. Docker Compose安装（通用NAS）
+## 路径 B：Docker Compose 安装
 
+### 1. 克隆仓库
 ```bash
-# 1. 克隆仓库
 git clone https://github.com/AIPMAndy/nasclaw.git
 cd nasclaw
-
-# 2. 修改配置
-cp examples/config.example.json config/openclaw.json
-# 编辑 config/openclaw.json，填入你的API Key
-
-# 3. 启动
-docker-compose up -d
-
-# 4. 查看日志
-docker-compose logs -f
 ```
 
----
-
-## 4. 配置国产模型
-
-### 4.1 通义千问（推荐新手）
-
-**免费额度：**
-- 100万token免费额度
-- 有效期：3个月
-
-**配置步骤：**
-1. 访问 https://dashscope.aliyun.com/
-2. 注册阿里云账号
-3. 开通DashScope
-4. 复制API Key
-5. 填入NASClaw Control UI
-
-### 4.2 Kimi（长文本首选）
-
-**特点：**
-- 200K上下文
-- 中文理解强
-
-**获取API Key：**
-1. 访问 https://platform.moonshot.cn/
-2. 注册账号
-3. 创建API Key
-4. 填入NASClaw
-
-### 4.3 GLM（推理能力强）
-
-**特点：**
-- 204K上下文
-- 代码生成好
-
-**获取API Key：**
-1. 访问 https://open.bigmodel.cn/
-2. 注册账号
-3. 创建API Key
-4. 填入NASClaw
-
----
-
-## 5. 配置飞书（可选）
-
-### 5.1 创建飞书应用
-
-1. 访问 https://open.feishu.cn/
-2. 创建企业自建应用
-3. 开启权限（详见 docs/feishu.md）
-4. 获取AppID和AppSecret
-
-### 5.2 配置NASClaw
-
-1. 进入Control UI
-2. 点击「Channels」→「Feishu」
-3. 填入AppID和AppSecret
-4. 点击「Authorize」完成授权
-
----
-
-## 6. 验证安装
-
-在飞书私聊中发送：
-
-```
-你好，圆圆
-```
-
-如果收到回复，说明安装成功！🎉
-
----
-
-## 7. 常见问题
-
-### Q: 安装失败怎么办？
-A: 尝试腾讯SkillHub镜像：
+### 2. 准备目录与配置
 ```bash
-https://skillhub.tencent.com/
+mkdir -p config data
+cp examples/config.example.json config/openclaw.json
 ```
 
-### Q: 模型无法调用？
-A: 检查网络，或使用宿主机网络模式：
-```yaml
-network_mode: host
+然后编辑：
+- `config/openclaw.json`
+
+至少先填好一个模型提供商的 API Key。
+
+### 3. 启动
+```bash
+docker compose -f docker/docker-compose.yml up -d
 ```
 
-### Q: 502错误？
-A: 等待2-3分钟后刷新，容器启动需要时间。
+### 4. 查看状态
+```bash
+docker compose -f docker/docker-compose.yml logs -f
+```
+
+如果容器已启动，再访问：
+- `http://你的NAS_IP:18789`
 
 ---
 
-## 8. 下一步
+## 模型建议
 
-- 📖 阅读 [完整文档](../README.md)
-- 🐱 了解 [猫咪哲学](./cat-philosophy.md)
-- 🔧 查看 [高级配置](./advanced.md)
-- 💬 加入 [交流群](https://github.com/AIPMAndy/nasclaw/discussions)
+### 新手优先
+**通义千问**：门槛低，适合先跑通。
+
+### 长文本优先
+**Kimi**：适合文档、知识库、长上下文。
+
+### 推理 / 代码优先
+**GLM**：适合逻辑型任务和代码类任务。
 
 ---
 
-**5分钟后，你将拥有一只7×24小时在线的AI猫！** 🐱
+## 飞书建议
+
+第一次安装时，**不要一开始就把飞书也一起折腾完**。
+
+更好的顺序是：
+1. 先把 OpenClaw 跑起来
+2. 确认模型调用正常
+3. 再去配置飞书
+
+这样能显著减少排错维度。
+
+飞书配置见：
+- [飞书深度打通配置指南](./feishu.md)
+
+---
+
+## 安装完成后的验证动作
+
+建议按这个顺序验证：
+
+### 验证 1：Control UI 能打开
+如果 UI 都打不开，先不要做后续步骤。
+
+### 验证 2：模型能响应
+在 UI 或聊天里发一条简单消息，确认模型连接正常。
+
+### 验证 3：飞书能收发消息
+再去验证飞书收发和授权。
+
+---
+
+## 遇到问题先看这里
+
+最常见的问题都整理在这里：
+- [踩坑记录与实战经验](./troubleshooting.md)
+
+常见问题包括：
+- token 复制错误
+- 502 Bad Gateway
+- 网络访问模型失败
+- 飞书授权失败
+- NAS 存储空间不足
+
+---
+
+## 推荐下一步
+
+跑起来之后，建议继续做这三件事：
+
+1. 配置飞书接入
+2. 固定数据目录并做好备份
+3. 打开自动重启 / 健康检查，确保 7×24 稳定运行
+
+---
+
+## 如果你只记住一句话
+
+**先跑通，再联动；先单点验证，再做全链路。**

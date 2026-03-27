@@ -1,254 +1,211 @@
-# NASClaw
+<div align="center">
 
-> 在NAS上部署OpenClaw的完整指南 - 国产模型 + 飞书打通 + 7×24小时自动化
+# 🐱 NASClaw
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Docker](https://img.shields.io/badge/docker-%230db7ed.svg?style=for-the-badge&logo=docker&logoColor=white)](https://www.docker.com/)
+**把 OpenClaw 稳定跑在 NAS 上的实战部署方案**  
+**适合中文用户、国产模型、飞书协同、7×24 小时常驻运行**
+
+[![License: Apache-2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](./LICENSE)
 [![OpenClaw](https://img.shields.io/badge/OpenClaw-2026.3.8-blue)](https://openclaw.ai)
-[![Troubleshooting](https://img.shields.io/badge/踩坑记录-6887字-orange)](./docs/troubleshooting.md)
+[![Docker](https://img.shields.io/badge/Docker-Ready-2496ED?logo=docker&logoColor=white)](./docker/docker-compose.yml)
+[![Quick Start](https://img.shields.io/badge/Quick%20Start-5%20min-brightgreen)](./docs/quickstart.md)
+[![Troubleshooting](https://img.shields.io/badge/Troubleshooting-实战踩坑-orange)](./docs/troubleshooting.md)
+
+**简体中文** | [English](./README_EN.md)
+
+</div>
 
 ---
 
-## 📢 重要提示
+## 这是什么
 
-**新手必读：** [📖 5分钟快速开始](./docs/quickstart.md)  
-**遇到问题：** [🔥 踩坑记录与实战经验](./docs/troubleshooting.md)（6887字真实踩坑记录）  
-**飞书打通：** [💬 飞书配置指南](./docs/feishu.md)
+NASClaw 不是另一个 AI Agent 框架，而是一个 **面向 NAS 场景的 OpenClaw 部署方案与文档项目**。
 
----
+它解决的是很多中文用户都会遇到的同一个问题：
 
-## 🎯 项目简介
+> 想让 AI 助手 24 小时在线、数据尽量留在自己设备上、能接入飞书、还能优先使用国产模型，但官方文档更偏通用，落到 NAS 场景时容易踩坑。
 
-NASClaw 是一个专门面向NAS用户的OpenClaw部署方案，让你在家里的NAS上运行7×24小时的AI助手。
-
-**核心特色：**
-- 🏠 **NAS原生支持**：极空间、群晖、威联通等主流NAS
-- 🇨🇳 **国产模型优先**：Kimi、GLM、MiniMax、通义千问
-- 💬 **飞书深度打通**：文档/日历/任务/消息全打通
-- 🐱 **猫咪哲学**：独立、敏锐、优雅、傲娇的AI助手
-- ⚡ **7×24小时运行**：NAS不停，AI不停
+NASClaw 的目标就是把这件事讲清楚、跑起来、少踩坑。
 
 ---
 
-## 📋 系统要求
+## 它适合谁
 
-- **NAS设备**：极空间/群晖/威联通/自建NAS
-- **Docker支持**：必须支持Docker容器
-- **网络**：可访问国内模型API（部分模型需要特殊网络配置）
-- **存储**：至少10GB可用空间
+- 已经有 **极空间 / 群晖 / 威联通 / 自建 NAS** 的用户
+- 想把 OpenClaw 跑成 **家庭或个人工作流中枢** 的用户
+- 需要 **国产模型优先** 的中文用户
+- 想把 AI 助手和 **飞书消息 / 文档 / 日历 / 任务** 打通的人
+- 不想租 VPS，或者更在意 **本地化、长期运行、低额外成本** 的用户
 
 ---
 
-## 🚀 快速开始
+## 为什么不是直接看 OpenClaw 官方文档
 
-### 方法一：应用商店安装（推荐极空间用户）
+| 维度 | 官方文档 | 普通 Docker 教程 | **NASClaw** |
+|---|---|---|---|
+| 面向 NAS 用户 | 一般 | 一般 | ✅ 明确聚焦 |
+| 中文场景 | 一般 | 一般 | ✅ 中文优先 |
+| 国产模型建议 | 少 | 少 | ✅ 直接给可用方案 |
+| 飞书打通 | 分散 | 基本没有 | ✅ 单独整理 |
+| 踩坑经验 | 通用 | 通用 | ✅ 来自真实部署 |
+| 7×24 稳定运行建议 | 少 | 一般 | ✅ 有针对性 |
 
-#### 步骤1：应用商店安装
-1. 打开极空间应用商店
-2. 搜索并安装 "OpenClaw"
-3. 等待安装完成
+一句话：
 
-#### 步骤2：初始化容器
-1. 进入Docker界面
-2. 找到名为 `appstore_openclaw` 的容器
-3. 点击容器 → 进入Shell界面 → 点击"连接"
+**如果你只是想了解 OpenClaw，本项目不是必需的；如果你想把 OpenClaw 真正稳定跑在 NAS 上，这个项目会更省时间。**
 
-#### 步骤3：执行初始化命令
+---
+
+## 核心卖点
+
+### 1) NAS 场景友好
+- 针对极空间、群晖、威联通、自建 Docker NAS 给出落地方式
+- 关注端口、数据目录、容器重启、健康检查、长期开机等问题
+
+### 2) 中文用户友好
+- 默认从中文用户最常见的模型、飞书、权限、网络问题出发
+- 少讲抽象概念，多给能直接照抄的操作步骤
+
+### 3) 国产模型优先
+- 优先推荐 Kimi、GLM、通义千问、MiniMax 等模型
+- 适合国内网络环境与中文工作流
+
+### 4) 飞书工作流打通
+- 让 OpenClaw 不只是聊天机器人，而是能接入消息、文档、日历、任务的执行节点
+
+### 5) 实战踩坑记录
+- 不只是“怎么装”，更包括“为什么会坏、坏了怎么修”
+
+---
+
+## 30 秒看懂仓库结构
+
+```text
+.
+├── README.md                 # 中文主页
+├── README_EN.md              # 英文主页
+├── docker/docker-compose.yml # 通用 Docker Compose 示例
+├── scripts/install.sh        # 一键安装脚本
+├── examples/config.example.json
+└── docs/
+    ├── quickstart.md         # 5 分钟快速开始
+    ├── install.md            # 详细安装说明
+    ├── feishu.md             # 飞书配置
+    └── troubleshooting.md    # 踩坑与修复
+```
+
+---
+
+## 快速开始
+
+### 方案 A：先看 5 分钟快速开始
+
+如果你希望先跑起来，再逐步优化：
+
+- [📖 5 分钟快速开始](./docs/quickstart.md)
+- [🔥 踩坑记录与实战经验](./docs/troubleshooting.md)
+- [💬 飞书配置指南](./docs/feishu.md)
+
+### 方案 B：直接用安装脚本
+
 ```bash
-su node
-stty rows $(tput lines) cols $(tput cols)
-openclaw onboard
+curl -fsSL https://raw.githubusercontent.com/AIPMAndy/nasclaw/main/scripts/install.sh | bash
 ```
 
-#### 步骤4：选择快速开始
-- 选择 **"快速开始"**
-- **重要**：Config handling 一定要选择 **"Update values"**
-
-#### 步骤5：配置模型
-
-**国产模型推荐：**
-
-| 模型 | 特点 | 配置方式 |
-|------|------|----------|
-| **Kimi K2.5** | 长文本强，200K上下文 | API Key |
-| **GLM-5** | 推理能力强 | API Key |
-| **MiniMax** | 创意生成好 | API Key |
-| **通义千问** | 免费额度，推荐新手 | 浏览器授权 |
-
-**通义千问免费试用（推荐新手）：**
-1. 选择通义千问模型
-2. 复制红框中的授权链接
-3. 在浏览器中打开完成授权
-4. 登录阿里云账号，点击确定
-5. 返回终端，选择保存
-
-#### 步骤6：跳过可选配置
-以下步骤都可以先跳过，初始化完成后再配置：
-- 飞书配置 → 选择 "skip for now"
-- 其他集成 → 选择 "skip for now"
-- 高级选项 → 全部选择 "no"
-
-#### 步骤7：保存Token
-1. 在Control UI结果中**记住自己的token**
-2. How do you want to hatch your bot? 选择 **"Do this later"**
-3. 初始化向导结束
-
-#### 步骤8：访问Control UI
-1. 通过应用图标打开 Gateway Control UI
-2. 填入刚才复制的token
-3. **注意**：命令行可能超过边界，复制时去除空格和 `|` 字符
-
----
-
-### 方法二：Docker手动安装
-
-适用于所有支持Docker的NAS。
+### 方案 C：手动 Docker Compose
 
 ```bash
-# 1. 拉取镜像
-docker pull openclaw/openclaw:latest
+git clone https://github.com/AIPMAndy/nasclaw.git
+cd nasclaw
+mkdir -p config data
+cp examples/config.example.json config/openclaw.json
+# 编辑 config/openclaw.json 后再启动
 
-# 2. 创建目录
-mkdir -p /volume1/docker/openclaw/{data,config}
-
-# 3. 运行容器
-docker run -d \
-  --name openclaw \
-  --restart unless-stopped \
-  -p 18789:18789 \
-  -v /volume1/docker/openclaw/data:/home/node/.openclaw \
-  -v /volume1/docker/openclaw/config:/app/config \
-  openclaw/openclaw:latest
-
-# 4. 进入容器初始化
-docker exec -it openclaw /bin/bash
-su node
-openclaw onboard
+docker compose -f docker/docker-compose.yml up -d
 ```
 
 ---
 
-## ⚙️ 配置详解
+## 推荐模型组合
 
-### 国产模型配置
+| 模型 | 推荐原因 | 适合场景 |
+|---|---|---|
+| Kimi | 长文本能力强 | 文档分析、复杂上下文 |
+| GLM | 推理与代码表现稳 | 逻辑任务、代码辅助 |
+| 通义千问 | 上手快、门槛低 | 新手试用、日常对话 |
+| MiniMax | 创意和多模态有优势 | 内容生成、灵感任务 |
 
-#### Kimi K2.5（推荐）
-```json
-{
-  "models": {
-    "custom": {
-      "baseUrl": "https://api.moonshot.cn/v1",
-      "apiKey": "your-kimi-api-key",
-      "models": [{
-        "id": "kimi-k2.5",
-        "contextWindow": 200000
-      }]
-    }
-  }
-}
-```
-
-#### GLM-5
-```json
-{
-  "models": {
-    "custom": {
-      "baseUrl": "https://open.bigmodel.cn/api/paas/v4",
-      "apiKey": "your-glm-api-key",
-      "models": [{
-        "id": "glm-5",
-        "contextWindow": 204800
-      }]
-    }
-  }
-}
-```
-
-#### 通义千问（免费额度）
-```json
-{
-  "models": {
-    "custom": {
-      "baseUrl": "https://dashscope.aliyuncs.com/api/v1",
-      "apiKey": "your-qwen-api-key",
-      "models": [{
-        "id": "qwen-max",
-        "contextWindow": 128000
-      }]
-    }
-  }
-}
-```
-
-### 飞书深度打通
-
-详见 [飞书配置指南](./docs/feishu.md)
+> 重点不是“哪个模型绝对最好”，而是 **在你的网络、预算、任务类型下哪个最稳**。
 
 ---
 
-## 🔧 常见问题
+## 飞书能打通什么
 
-### Q1: 模型无法调用，网络错误
-**原因**：部分模型API需要特殊网络环境
+配置完成后，典型可实现：
 
-**解决**：
-- 方法1：使用国内可直接访问的模型（Kimi/GLM/通义千问）
-- 方法2：配置NAS的网络代理
-- 方法3：使用宿主机的网络方案（Docker `--network host`）
+- 飞书私聊里直接和你的 AI 助手互动
+- 读取和更新飞书文档
+- 查询和创建日程
+- 管理任务和待办
+- 基于 NAS 做更长期的自动化运行
 
-### Q2: 升级后第一次启动502错误
-**原因**：初始化需要时间
-
-**解决**：等待2-3分钟后刷新页面
-
-### Q3: Token错误或无法登录
-**解决**：
-1. 在 `/安装目录/openclaw/openclaw.json` 中找到token
-2. 重新填入Control UI
-3. 如仍报错，重启OpenClaw容器
-
-### Q4: 官方命令安装失败
-**解决**：尝试腾讯SkillHub的镜像
-```bash
-https://skillhub.tencent.com/
-```
+详见：
+- [飞书配置指南](./docs/feishu.md)
 
 ---
 
-## 🐱 进阶玩法
+## 当前项目最有价值的部分
 
-### 猫咪哲学注入
+如果你是第一次接触这个仓库，建议优先看：
 
-让你的AI助手拥有猫咪特质：
-- **独立**：有自己的判断，不盲从
-- **敏锐**：观察细节，预判需求
-- **优雅**：做事干净利落
-- **傲娇**：有原则，只服务值得的人
-
-详见 [猫咪哲学指南](./docs/cat-philosophy.md)
-
-### 7×24小时自动化
-
-配置每日自动任务：
-```bash
-# 编辑 crontab
-crontab -e
-
-# 添加定时任务
-0 8 * * * /usr/local/bin/openclaw send "morning-brief"
-0 20 * * * /usr/local/bin/openclaw analyze-investment
-0 23 * * * /usr/local/bin/openclaw reflect-and-update
-```
-
-### 双猫架构
-
-参考 [双猫架构指南](./docs/dual-cat.md) 配置：
-- **小天**（Mac版）：Claude Opus，深度思考
-- **圆圆**（NAS版）：国产三剑客，日常自动化
+1. **[快速开始](./docs/quickstart.md)**：最快把服务跑起来
+2. **[踩坑文档](./docs/troubleshooting.md)**：减少 80% 无效折腾
+3. **[飞书指南](./docs/feishu.md)**：把“能跑”变成“能用”
 
 ---
 
-## 📚 相关项目
+## Roadmap
+
+- [x] 提供 NAS 场景安装说明
+- [x] 提供国产模型配置示例
+- [x] 提供飞书接入文档
+- [x] 提供真实部署踩坑记录
+- [ ] 补充多平台 NAS 差异清单（极空间 / 群晖 / 威联通）
+- [ ] 增加 Demo 截图 / GIF
+- [ ] 增加常见配置模板（个人版 / 团队版 / 低成本版）
+- [ ] 增加 benchmark 与稳定性对比
+
+---
+
+## 现在最缺什么
+
+如果你希望这个项目更火，最缺的不是再多写一页文档，而是下面三件事：
+
+1. **Demo 资产**：首页 GIF / 截图 / 架构图
+2. **用户证据**：真实安装案例、NAS 型号、模型选择、效果反馈
+3. **分发动作**：把项目发到中文技术社区 + 海外社区
+
+也就是说：
+
+**这项目已经有“内容”，但还缺“门面”和“传播”。**
+
+---
+
+## 贡献方式
+
+欢迎提交：
+
+- 不同 NAS 机型的适配经验
+- 国产模型配置模板
+- 飞书权限与授权补充
+- 安装失败后的修复案例
+- 首页 Demo 截图 / GIF / 架构图
+
+请先阅读：[CONTRIBUTING.md](./CONTRIBUTING.md)
+
+---
+
+## 相关项目
 
 - [OpenClaw](https://openclaw.ai) - 核心框架
 - [KnowMe](https://github.com/AIPMAndy/knowme) - 性格分析系统
@@ -257,31 +214,22 @@ crontab -e
 
 ---
 
-## 🤝 贡献指南
+## License
 
-欢迎提交Issue和PR！
-
-**贡献方式：**
-1. 提交NAS适配问题
-2. 补充国产模型配置
-3. 完善文档教程
-4. 分享使用案例
+本项目基于 [Apache 2.0](./LICENSE) 开源。
 
 ---
 
-## 📄 许可证
+## 如果这个项目对你有帮助
 
-Apache 2.0 License - 详见 [LICENSE](./LICENSE)
+请直接做两件事：
 
----
+1. 给仓库一个 **⭐ Star**
+2. 提一个 **Issue / PR / 使用案例**
 
-## 💬 交流群
-
-- GitHub Issues: [NASClaw Issues](https://github.com/AIPMAndy/nasclaw/issues)
-- 飞书群：扫描下方二维码加入
+这会显著提高项目继续迭代的概率。
 
 ---
 
-**Made with 🐱 by Andy | AI酋长**
-
-*让每只NAS都养一只AI猫*
+**Made with 🐱 by Andy**  
+**让每台 NAS 都拥有一只长期在线的 AI 助手**

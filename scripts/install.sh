@@ -70,13 +70,22 @@ ${DOCKER_COMPOSE} up -d
 echo "⏳ 等待服务启动..."
 sleep 5
 
+# 计算访问地址（兼容不同 NAS / Linux 发行版）
+HOST_IP=$(hostname -I 2>/dev/null | awk '{print $1}')
+if [ -z "$HOST_IP" ]; then
+    HOST_IP=$(ip route get 1 2>/dev/null | awk '{print $7; exit}')
+fi
+if [ -z "$HOST_IP" ]; then
+    HOST_IP="<NAS_IP>"
+fi
+
 # 检查状态
 if docker ps | grep -q nasclaw; then
     echo ""
     echo "✅ NASClaw 安装成功!"
     echo ""
     echo "🌐 访问地址:"
-    echo "   http://$(hostname -I | awk '{print $1}'):18789"
+    echo "   http://${HOST_IP}:18789"
     echo ""
     echo "📖 下一步:"
     echo "   1. 访问上述地址"
