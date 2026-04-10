@@ -11,11 +11,20 @@ services:
       - ./data:/home/node/.openclaw
       - ./config:/app/config
     environment:
-      - NODE_ENV=production
-      - OPENCLAW_HOME=/home/node/.openclaw
+      NODE_ENV: production
+      OPENCLAW_HOME: /home/node/.openclaw
+      # 如需代理，可取消注释并改成自己的地址
+      # HTTP_PROXY: http://host.docker.internal:7890
+      # HTTPS_PROXY: http://host.docker.internal:7890
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://127.0.0.1:18789 >/dev/null 2>&1 || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 40s
     networks:
       - nasclaw-network
-    # 如果使用宿主机网络（解决部分模型网络问题）
+    # 如果需要更强的网络兼容性，可切换到宿主机网络
     # network_mode: host
 
 networks:

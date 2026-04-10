@@ -86,11 +86,13 @@ NASClaw 的目标就是把这件事讲清楚、跑起来、少踩坑。
 ├── README_EN.md              # 英文主页
 ├── docker/docker-compose.yml # 通用 Docker Compose 示例
 ├── scripts/install.sh        # 一键安装脚本
+├── scripts/validate_links.py # 文档链接校验
 ├── examples/config.example.json
 └── docs/
     ├── quickstart.md         # 5 分钟快速开始
     ├── install.md            # 详细安装说明
     ├── feishu.md             # 飞书配置
+    ├── launch-checklist.md   # 上线前检查清单
     └── troubleshooting.md    # 踩坑与修复
 ```
 
@@ -103,6 +105,7 @@ NASClaw 的目标就是把这件事讲清楚、跑起来、少踩坑。
 如果你希望先跑起来，再逐步优化：
 
 - [📖 5 分钟快速开始](./docs/quickstart.md)
+- [🧭 上线前检查清单](./docs/launch-checklist.md)
 - [🔥 踩坑记录与实战经验](./docs/troubleshooting.md)
 - [💬 飞书配置指南](./docs/feishu.md)
 
@@ -159,8 +162,9 @@ docker compose -f docker/docker-compose.yml up -d
 如果你是第一次接触这个仓库，建议优先看：
 
 1. **[快速开始](./docs/quickstart.md)**：最快把服务跑起来
-2. **[踩坑文档](./docs/troubleshooting.md)**：减少 80% 无效折腾
-3. **[飞书指南](./docs/feishu.md)**：把“能跑”变成“能用”
+2. **[上线检查清单](./docs/launch-checklist.md)**：确保分享前和长期运行前不踩明显坑
+3. **[踩坑文档](./docs/troubleshooting.md)**：减少 80% 无效折腾
+4. **[飞书指南](./docs/feishu.md)**：把“能跑”变成“能用”
 
 ---
 

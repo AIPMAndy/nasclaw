@@ -1,0 +1,35 @@
+name: Validate NASClaw
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Validate repository structure
+        run: |
+          test -f README.md
+          test -f README_EN.md
+          test -f docker/docker-compose.yml
+          test -f scripts/install.sh
+          test -f examples/config.example.json
+          test -f docs/quickstart.md
+          test -f docs/install.md
+          test -f docs/feishu.md
+          test -f docs/troubleshooting.md
+
+      - name: Validate shell script syntax
+        run: bash -n scripts/install.sh
+
+      - name: Validate docker compose syntax
+        run: docker compose -f docker/docker-compose.yml config > /tmp/docker-compose.rendered.yml
+
+      - name: Validate docs links
+        run: python3 scripts/validate_links.py

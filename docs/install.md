@@ -197,4 +197,4 @@ Token: xxxxxxxxxxxxxxxxxxxxxxxx
 
 ---
 
-**下一步：** [配置国产模型](../README.md#国产模型配置)
+**下一步：** 建议先阅读 [快速开始](./quickstart.md) 并完成至少一个模型提供商配置。

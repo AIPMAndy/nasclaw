@@ -12,6 +12,9 @@
 ### 路径 B：通用 Docker 用户
 如果你用的是群晖、威联通、自建 NAS，或者更习惯自己控配置，走 Docker Compose。
 
+### 路径 C：安装脚本用户
+如果你希望远程 SSH 快速部署，或先一键拉起再补配置，可以直接使用安装脚本。
+
 ---
 
 ## 路径 A：极空间 5 分钟安装
@@ -78,6 +81,32 @@ docker compose -f docker/docker-compose.yml logs -f
 
 如果容器已启动，再访问：
 - `http://你的NAS_IP:18789`
+
+默认示例已经包含：
+- `restart: unless-stopped`
+- 基础 `healthcheck`
+- 持久化目录挂载
+
+如果你所在网络环境访问模型不稳定，可改用 `host` 网络模式。
+
+---
+
+## 路径 C：安装脚本
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/AIPMAndy/nasclaw/main/scripts/install.sh | bash
+```
+
+适合场景：
+- SSH 到 NAS 后快速部署
+- 想减少手工建目录与下载文件
+- 需要非交互模式
+
+可选环境变量：
+
+```bash
+NASCLAW_NO_PROMPT=1 NASCLAW_AUTO_START=1 bash scripts/install.sh
+```
 
 ---
 

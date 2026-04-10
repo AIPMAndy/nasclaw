@@ -1,101 +1,134 @@
 #!/bin/bash
 
 # NASClaw 一键安装脚本
-# 支持：极空间、群晖、威联通等NAS
+# 支持：极空间、群晖、威联通等 NAS
 
-set -e
+set -euo pipefail
 
-echo "🐱 NASClaw 安装脚本"
-echo "===================="
-echo ""
+REPO_RAW_BASE="https://raw.githubusercontent.com/AIPMAndy/nasclaw/main"
+INSTALL_DIR="${INSTALL_DIR:-${HOME}/nasclaw}"
+CONFIG_PATH="${INSTALL_DIR}/config/openclaw.json"
+NO_PROMPT="${NASCLAW_NO_PROMPT:-0}"
+AUTO_START="${NASCLAW_AUTO_START:-1}"
+FORCE_OVERWRITE="${NASCLAW_FORCE_OVERWRITE:-0}"
 
-# 检查Docker
-if ! command -v docker &> /dev/null; then
-    echo "❌ 错误：未检测到Docker"
-    echo "请先安装Docker后再运行此脚本"
+log() {
+  echo "$1"
+}
+
+need_cmd() {
+  if ! command -v "$1" >/dev/null 2>&1; then
+    echo "❌ 缺少依赖：$1"
     exit 1
+  fi
+}
+
+copy_config_if_needed() {
+  if [ -f "$CONFIG_PATH" ] && [ "$FORCE_OVERWRITE" != "1" ]; then
+    log "ℹ️  检测到已有配置，保留现有 ${CONFIG_PATH}"
+    return
+  fi
+
+  curl -fsSL "${REPO_RAW_BASE}/examples/config.example.json" -o "$CONFIG_PATH"
+  log "✅ 已写入示例配置: ${CONFIG_PATH}"
+}
+
+get_compose_cmd() {
+  if command -v docker-compose >/dev/null 2>&1; then
+    echo "docker-compose"
+  else
+    echo "docker compose"
+  fi
+}
+
+get_host_ip() {
+  local host_ip
+  host_ip=$(hostname -I 2>/dev/null | awk '{print $1}') || true
+  if [ -z "${host_ip:-}" ]; then
+    host_ip=$(ip route get 1 2>/dev/null | awk '{print $7; exit}') || true
+  fi
+  if [ -z "${host_ip:-}" ]; then
+    host_ip="<NAS_IP>"
+  fi
+  echo "$host_ip"
+}
+
+log "🐱 NASClaw 安装脚本"
+log "===================="
+log ""
+
+need_cmd docker
+need_cmd curl
+
+log "✅ Docker 已安装"
+
+DOCKER_COMPOSE="$(get_compose_cmd)"
+if [ "$DOCKER_COMPOSE" = "docker compose" ]; then
+  log "⚠️  未检测到 docker-compose，改用 docker compose"
 fi
 
-echo "✅ Docker已安装"
+log "📁 安装目录: ${INSTALL_DIR}"
+mkdir -p "${INSTALL_DIR}/data" "${INSTALL_DIR}/config"
+cd "${INSTALL_DIR}"
 
-# 检查Docker Compose
-if ! command -v docker-compose &> /dev/null; then
-    echo "⚠️  未检测到Docker Compose，尝试使用docker compose..."
-    DOCKER_COMPOSE="docker compose"
-else
-    DOCKER_COMPOSE="docker-compose"
-fi
+log "📥 下载配置文件..."
+curl -fsSL "${REPO_RAW_BASE}/docker/docker-compose.yml" -o docker-compose.yml
+copy_config_if_needed
 
-# 创建安装目录
-INSTALL_DIR="${HOME}/nasclaw"
-echo "📁 创建安装目录: ${INSTALL_DIR}"
-mkdir -p ${INSTALL_DIR}/{data,config,scripts}
-cd ${INSTALL_DIR}
+log ""
+log "📝 请配置你的模型 API Key:"
+log "   文件: ${CONFIG_PATH}"
+log ""
+log "   推荐模型:"
+log "   - 通义千问: https://dashscope.aliyun.com/"
+log "   - Kimi: https://platform.moonshot.cn/"
+log "   - GLM: https://open.bigmodel.cn/"
+log ""
 
-# 下载docker-compose.yml
-echo "📥 下载配置文件..."
-curl -fsSL https://raw.githubusercontent.com/AIPMAndy/nasclaw/main/docker/docker-compose.yml -o docker-compose.yml
-
-# 下载示例配置
-curl -fsSL https://raw.githubusercontent.com/AIPMAndy/nasclaw/main/examples/config.example.json -o config/openclaw.json
-
-echo ""
-echo "📝 请配置你的模型API Key:"
-echo "   编辑文件: ${INSTALL_DIR}/config/openclaw.json"
-echo ""
-echo "   推荐模型:"
-echo "   - 通义千问: https://dashscope.aliyun.com/ (免费额度)"
-echo "   - Kimi: https://platform.moonshot.cn/"
-echo "   - GLM: https://open.bigmodel.cn/"
-echo ""
-
-read -p "是否现在编辑配置文件? (y/n) " -n 1 -r
-echo
-if [[ $REPLY =~ ^[Yy]$ ]]; then
-    if command -v nano &> /dev/null; then
-        nano config/openclaw.json
-    elif command -v vi &> /dev/null; then
-        vi config/openclaw.json
+if [ "$NO_PROMPT" != "1" ]; then
+  read -p "是否现在编辑配置文件? (y/n) " -n 1 -r
+  echo
+  if [[ ${REPLY:-n} =~ ^[Yy]$ ]]; then
+    if command -v nano >/dev/null 2>&1; then
+      nano "$CONFIG_PATH"
+    elif command -v vi >/dev/null 2>&1; then
+      vi "$CONFIG_PATH"
     else
-        echo "请手动编辑: ${INSTALL_DIR}/config/openclaw.json"
+      log "请手动编辑: ${CONFIG_PATH}"
     fi
-fi
-
-# 启动NASClaw
-echo ""
-echo "🚀 启动NASClaw..."
-${DOCKER_COMPOSE} up -d
-
-# 等待启动
-echo "⏳ 等待服务启动..."
-sleep 5
-
-# 计算访问地址（兼容不同 NAS / Linux 发行版）
-HOST_IP=$(hostname -I 2>/dev/null | awk '{print $1}')
-if [ -z "$HOST_IP" ]; then
-    HOST_IP=$(ip route get 1 2>/dev/null | awk '{print $7; exit}')
-fi
-if [ -z "$HOST_IP" ]; then
-    HOST_IP="<NAS_IP>"
-fi
-
-# 检查状态
-if docker ps | grep -q nasclaw; then
-    echo ""
-    echo "✅ NASClaw 安装成功!"
-    echo ""
-    echo "🌐 访问地址:"
-    echo "   http://${HOST_IP}:18789"
-    echo ""
-    echo "📖 下一步:"
-    echo "   1. 访问上述地址"
-    echo "   2. 完成初始化向导"
-    echo "   3. 配置飞书集成"
-    echo ""
-    echo "💡 查看日志: ${DOCKER_COMPOSE} logs -f"
-    echo ""
+  fi
 else
+  log "ℹ️  已跳过交互式编辑，可稍后手动修改配置。"
+fi
+
+if [ "$AUTO_START" = "1" ]; then
+  log ""
+  log "🚀 启动 NASClaw..."
+  ${DOCKER_COMPOSE} up -d
+
+  log "⏳ 等待服务启动..."
+  sleep 5
+
+  HOST_IP="$(get_host_ip)"
+  if docker ps --format '{{.Names}}' | grep -q '^nasclaw$'; then
+    log ""
+    log "✅ NASClaw 安装成功!"
+    log ""
+    log "🌐 访问地址:"
+    log "   http://${HOST_IP}:18789"
+    log ""
+    log "📖 下一步:"
+    log "   1. 访问上述地址"
+    log "   2. 完成初始化向导"
+    log "   3. 配置飞书集成"
+    log ""
+    log "💡 查看日志: ${DOCKER_COMPOSE} logs -f"
+    log ""
+  else
     echo "❌ 启动失败，请检查日志:"
     echo "   ${DOCKER_COMPOSE} logs"
     exit 1
+  fi
+else
+  log "ℹ️  已跳过自动启动。准备好后可执行: ${DOCKER_COMPOSE} up -d"
 fi
