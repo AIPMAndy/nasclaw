@@ -13,8 +13,6 @@
 
 **简体中文** | [English](./README_EN.md)
 
-![NASClaw 架构图](./docs/images/architecture.png)
-
 </div>
 
 ---
